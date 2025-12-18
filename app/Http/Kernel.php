@@ -1,0 +1,1 @@
+'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
