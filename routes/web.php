@@ -1,11 +1,17 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Warga\SuratController;
+use App\Http\Controllers\Admin\SuratTypeController;
+use App\Http\Controllers\Sekretaris\ApprovalController;
+use App\Http\Controllers\KepalaDesa\SignatureController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('auth.login');
+})->middleware('guest');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -33,9 +39,17 @@ Route::middleware(['auth'])->group(function () {
 
     // SEKRETARIS
     Route::middleware('role:sekretaris')->prefix('sekretaris')->group(function () {
-        Route::get('/approval', [ApprovalController::class, 'index']);
-        Route::post('/approve/{surat}', [ApprovalController::class, 'approve']);
-        Route::post('/reject/{surat}', [ApprovalController::class, 'reject']);
+        Route::get('/approval', [ApprovalController::class, 'index'])
+            ->name('approval.index');
+
+        Route::get('/approval/{surat}', [ApprovalController::class, 'show'])
+            ->name('approval.show');
+
+        Route::post('/approval/{surat}/approve', [ApprovalController::class, 'approve'])
+            ->name('approval.approve');
+
+        Route::post('/approval/{surat}/reject', [ApprovalController::class, 'reject'])
+            ->name('approval.reject');
     });
 
     // KEPALA DESA

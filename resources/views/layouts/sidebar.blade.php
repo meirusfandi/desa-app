@@ -12,7 +12,11 @@
         @endrole
 
         @role('sekretaris')
-        <li><a href="/sekretaris/approval">Approval Surat</a></li>
+        <li>
+            <a href="{{ route('sekretaris.approval.index') }}">
+                Approval Surat
+            </a>
+        </li>
         @endrole
 
         @role('kepala_desa')
