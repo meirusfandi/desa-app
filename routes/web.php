@@ -32,9 +32,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // WARGA
-    Route::middleware('role:warga')->prefix('warga')->group(function () {
-        Route::get('/surat', [SuratController::class, 'index']);
-        Route::post('/surat', [SuratController::class, 'store']);
+    Route::middleware('role:warga')->prefix('warga')->name('warga.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
+        Route::resource('surat', SuratController::class);
     });
 
     // ADMIN
@@ -57,6 +58,8 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('/jenis-surat', AdminSuratTypeController::class);
             Route::get('/pengaturan', [AdminSettingController::class, 'index'])
                 ->name('pengaturan');
+            Route::post('/pengaturan', [AdminSettingController::class, 'update'])
+                ->name('pengaturan.update');
         });
     });
 

@@ -63,58 +63,18 @@
                     <li class="sidebar-title">Menu</li>
                     
                     <li
-                        class="sidebar-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <a href="{{ route('admin.dashboard') }}" class='sidebar-link'>
+                        class="sidebar-item {{ request()->routeIs('warga.dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('warga.dashboard') }}" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
 
-                    <li class="sidebar-item has-sub {{ request()->routeIs('admin.surat.*') ? 'active' : '' }}">
-                        <a href="#" class='sidebar-link'>
+                    <li class="sidebar-item {{ request()->routeIs('warga.surat.*') ? 'active' : '' }}">
+                        <a href="{{ route('warga.surat.index') }}" class='sidebar-link'>
                             <i class="bi bi-envelope"></i>
-                            <span>Surat Menyurat</span>
+                            <span>Riwayat Pengajuan Surat</span>
                         </a>
-                        
-                        <ul class="submenu {{ request()->routeIs('admin.surat.*') ? 'active' : '' }}">
-                            <li class="submenu-item {{ request()->routeIs('admin.surat.masuk') ? 'active' : '' }}">
-                                <a href="{{ route('admin.surat.masuk') }}" class="submenu-link">Permohonan Masuk</a>
-                            </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.surat.proses_ttd') ? 'active' : '' }}">
-                                <a href="{{ route('admin.surat.proses_ttd') }}" class="submenu-link">Proses Tanda Tangan</a>
-                            </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.surat.approved') ? 'active' : '' }}">
-                                <a href="{{ route('admin.surat.approved') }}" class="submenu-link">Surat Disetujui</a>
-                            </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.surat.rejected') ? 'active' : '' }}">
-                                <a href="{{ route('admin.surat.rejected') }}" class="submenu-link">Surat Ditolak</a>
-                            </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.surat.selesai') ? 'active' : '' }}">
-                                <a href="{{ route('admin.surat.selesai') }}" class="submenu-link">Surat Selesai</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li
-                        class="sidebar-item has-sub {{ request()->routeIs('admin.master.*') ? 'active' : '' }}">
-                        <a href="#" class='sidebar-link'>
-                            <i class="bi bi-stack"></i>
-                            <span>Master Data</span>
-                        </a>
-                        
-                        <ul class="submenu {{ request()->routeIs('admin.master.*') ? 'active' : '' }}">
-                            <li class="submenu-item {{ request()->routeIs('admin.master.users.*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.master.users.index') }}" class="submenu-link">Data Pengguna</a>
-                            </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.master.roles.*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.master.roles.index') }}" class="submenu-link">Data Role</a>
-                            </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.master.jenis-surat.*') ? 'active' : '' }}">
-                                <a href="{{ route('admin.master.jenis-surat.index') }}" class="submenu-link">Master Layanan</a>
-                            </li>
-                            <li class="submenu-item {{ request()->routeIs('admin.master.pengaturan') ? 'active' : '' }}">
-                                <a href="{{ route('admin.master.pengaturan') }}" class="submenu-link">Pengaturan Website</a>
-                            </li>
-                        </ul>
                     </li>
 
                     <li class="sidebar-item">

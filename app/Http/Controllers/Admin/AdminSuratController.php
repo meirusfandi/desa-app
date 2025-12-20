@@ -9,10 +9,16 @@ class AdminSuratController extends Controller
 {
     private function baseQuery($status)
     {
-        return SuratRequest::with(['user','suratType'])
-            ->where('status',$status)
-            ->latest()
-            ->get();
+        $query = SuratRequest::with(['user', 'suratType'])
+            ->where('status', $status);
+
+        if (request('q')) {
+            $query->whereHas('user', function ($q) {
+                $q->where('name', 'like', '%' . request('q') . '%');
+            });
+        }
+
+        return $query->latest()->paginate(10)->withQueryString();
     }
 
     public function masuk() {

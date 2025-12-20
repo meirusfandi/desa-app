@@ -7,59 +7,40 @@ use Illuminate\Http\Request;
 
 class AdminSettingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+        return view('admin.settings', compact('settings'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function update(Request $request)
     {
-        //
-    }
+        $data = $request->except(['_token', '_method']);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // Handle file uploads
+        if ($request->hasFile('app_logo')) {
+            $path = $request->file('app_logo')->store('settings', 'public');
+            \App\Models\Setting::updateOrCreate(['key' => 'app_logo'], ['value' => $path]);
+        }
+        if ($request->hasFile('app_favicon')) {
+            $path = $request->file('app_favicon')->store('settings', 'public');
+            \App\Models\Setting::updateOrCreate(['key' => 'app_favicon'], ['value' => $path]);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $regionalLogos = ['logo_desa', 'logo_kecamatan', 'logo_kabupaten'];
+        foreach ($regionalLogos as $logo) {
+            if ($request->hasFile($logo)) {
+                $path = $request->file($logo)->store('settings', 'public');
+                \App\Models\Setting::updateOrCreate(['key' => $logo], ['value' => $path]);
+            }
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        // Handle other fields
+        foreach ($data as $key => $value) {
+            if ($request->hasFile($key)) continue;
+            \App\Models\Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->back()->with('success', 'Pengaturan berhasil disimpan');
     }
 }
