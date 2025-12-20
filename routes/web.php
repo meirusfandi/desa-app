@@ -3,7 +3,12 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Warga\SuratController;
-use App\Http\Controllers\Admin\SuratTypeController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminSuratTypeController;
+use App\Http\Controllers\Admin\AdminSuratController;
+use App\Http\Controllers\Admin\AdminSettingController;
+use App\Http\Controllers\Admin\AdminRoleController; // Note: Ensure this file exists or removed
 use App\Http\Controllers\Sekretaris\ApprovalController;
 use App\Http\Controllers\KepalaDesa\SignatureController;
 
@@ -33,8 +38,26 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ADMIN
-    Route::middleware('role:admin')->prefix('admin')->group(function () {
-        Route::resource('/surat-types', SuratTypeController::class);
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        // DASHBOARD
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        
+        // SURAT MENYURAT
+        Route::prefix('surat')->name('surat.')->group(function () {
+            Route::get('/masuk', [AdminSuratController::class, 'masuk'])->name('masuk');
+            Route::get('/approved', [AdminSuratController::class, 'approved'])->name('approved');
+            Route::get('/rejected', [AdminSuratController::class, 'rejected'])->name('rejected');
+            Route::get('/proses-ttd', [AdminSuratController::class, 'prosesTtd'])->name('proses_ttd');
+            Route::get('/selesai', [AdminSuratController::class, 'selesai'])->name('selesai');
+        });
+        // MASTER
+        Route::prefix('master')->name('master.')->group(function () {
+            Route::resource('/users', AdminUserController::class);
+            Route::resource('/roles', AdminRoleController::class);
+            Route::resource('/jenis-surat', AdminSuratTypeController::class);
+            Route::get('/pengaturan', [AdminSettingController::class, 'index'])
+                ->name('pengaturan');
+        });
     });
 
     // SEKRETARIS

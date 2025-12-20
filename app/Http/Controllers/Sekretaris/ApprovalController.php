@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Secretary;
+namespace App\Http\Controllers\Sekretaris;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\SuratRequest;
 
 class ApprovalController extends Controller
 {
@@ -22,7 +23,7 @@ class ApprovalController extends Controller
         return view('sekretaris.approval.show', compact('surat'));
     }
 
-    public function approve(SuratRequest $surat)
+    public function approve(SuratRequest $surat, Request $request)
     {
         $request->validate(['notes' => 'required']);
         $surat->update([

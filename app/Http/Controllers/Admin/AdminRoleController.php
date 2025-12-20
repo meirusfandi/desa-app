@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class AdminRoleController extends Controller
+{
+    public function index()
+    {
+        return "Role Management (Not Implemented)";
+    }
+}

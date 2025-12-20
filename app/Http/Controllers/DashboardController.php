@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\{User, SuratRequest, SuratType};
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -9,12 +11,19 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-
-        return match (true) {
-            $user->hasRole('admin') => view('admin.dashboard'),
-            $user->hasRole('sekretaris') => view('sekretaris.dashboard'),
-            $user->hasRole('kepala_desa') => view('kepala_desa.dashboard'),
-            default => view('warga.dashboard'),
-        };
+        if ($user->hasRole('warga')) {
+            return view('warga.dashboard');
+        } else if ($user->hasRole('admin')) {
+            $totalSuratMasuk = SuratRequest::where('status', 'submitted')->count();
+            $totalSuratSelesai = SuratRequest::where('status', 'signed')->count();
+            $totalJenisSurat = SuratType::count();
+            $totalUser = User::count();
+            $totalRole = Role::count();
+            return view('admin.dashboard', compact('totalSuratMasuk', 'totalSuratSelesai', 'totalJenisSurat', 'totalUser', 'totalRole'));
+        } else if ($user->hasRole('sekretaris')) {
+            return view('sekretaris.dashboard');
+        } else if ($user->hasRole('kepala_desa')) {
+            return view('kepala_desa.dashboard');
+        }
     }
 }
