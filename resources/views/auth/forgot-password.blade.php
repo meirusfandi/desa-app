@@ -1,25 +1,44 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-    </div>
-
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
+    <div class="row h-100">
+        <div class="col-lg-5 col-12">
+            <div id="auth-left">
+                <div class="auth-logo">
+                    <a href="{{ url('/') }}"><img src="{{ asset('mazer/assets/compiled/svg/logo.svg') }}" alt="Logo"></a>
+                </div>
+                <h1 class="auth-title">Forgot Password</h1>
+                <p class="auth-subtitle mb-5">Input your email and we will send you reset password link.</p>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+                <form method="POST" action="{{ route('password.email') }}">
+                    @csrf
+                    <div class="form-group position-relative has-icon-left mb-4">
+                        <input type="email" class="form-control form-control-xl @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="Email" required autofocus>
+                        <div class="form-control-icon">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        @error('email')
+                            <div class="invalid-feedback">
+                                <i class="bx bx-radio-circle"></i>
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Send Reset Password Link</button>
+                </form>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
+                <div class="text-center mt-5 text-lg fs-4">
+                    <p class="text-gray-600">Remember your account? <a href="{{ route('login') }}" class="font-bold">Sign
+                            in</a>.</p>
+                </div>
+            </div>
         </div>
-    </form>
+        <div class="col-lg-7 d-none d-lg-block">
+            <div id="auth-right">
+
+            </div>
+        </div>
+    </div>
 </x-guest-layout>
