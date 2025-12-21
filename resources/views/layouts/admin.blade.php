@@ -63,8 +63,8 @@
                     <li class="sidebar-title">Menu</li>
 
                     <li
-                        class="sidebar-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <a href="{{ route('admin.dashboard') }}" class='sidebar-link'>
+                        class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('dashboard') }}" class='sidebar-link'>
                             <i class="bi bi-grid-fill"></i>
                             <span>Dashboard</span>
                         </a>
@@ -99,6 +99,20 @@
                         <a href="{{ route('sekretaris.approval.index') }}" class='sidebar-link'>
                             <i class="bi bi-check2-square"></i>
                             <span>Persetujuan Surat</span>
+                        </a>
+                    </li>
+                    @endrole
+                    @role('kepala_desa')
+                    <li class="sidebar-item {{ request()->routeIs('kepala.surat.*') ? 'active' : '' }}">
+                        <a href="{{ route('kepala.surat.index') }}" class='sidebar-link'>
+                            <i class="bi bi-pencil-square"></i>
+                            <span>Penandatanganan</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item {{ request()->routeIs('kepala.signature.*') ? 'active' : '' }}">
+                        <a href="{{ route('kepala.signature.edit') }}" class='sidebar-link'>
+                            <i class="bi bi-brush"></i>
+                            <span>Pengaturan TTD</span>
                         </a>
                     </li>
                     @endrole

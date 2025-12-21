@@ -110,9 +110,16 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // KEPALA DESA
-    Route::middleware('role:kepala_desa')->prefix('kepala-desa')->group(function () {
-        Route::get('/sign', [SignatureController::class, 'index']);
-        Route::post('/sign/{surat}', [SignatureController::class, 'sign']);
+    Route::middleware('role:kepala_desa')->prefix('kepala-desa')->name('kepala.')->group(function () {
+        Route::get('/signature', [SignatureController::class, 'editSignature'])->name('signature.edit');
+        Route::post('/signature', [SignatureController::class, 'updateSignature'])->name('signature.update');
+
+        Route::prefix('surat')->name('surat.')->group(function () {
+            Route::get('/', [SignatureController::class, 'index'])->name('index');
+            Route::get('/{surat}', [SignatureController::class, 'show'])->name('show');
+            Route::post('/{surat}/sign', [SignatureController::class, 'sign'])->name('sign');
+            Route::post('/{surat}/reject', [SignatureController::class, 'reject'])->name('reject');
+        });
     });
 });
 

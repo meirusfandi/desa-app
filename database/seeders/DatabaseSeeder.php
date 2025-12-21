@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             SuratTypeSeeder::class,
             SecretarySeeder::class,
+            KepalaDesaSeeder::class,
         ]);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{User, SuratRequest, SuratType};
+use App\Models\{User, SuratRequest, SuratType, Setting};
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 
@@ -38,7 +38,23 @@ class DashboardController extends Controller
                 'recentSurats'
             ));
         } else if ($user->hasRole('kepala_desa')) {
-            return view('kepala_desa.dashboard');
+            $totalQueue = SuratRequest::where('status', 'approved_secretary')->count();
+            $totalSigned = SuratRequest::where('status', 'signed')->count();
+            $totalReturned = SuratRequest::where('status', 'rejected')->count();
+            $recentSurats = SuratRequest::with(['user', 'suratType'])
+                ->whereIn('status', ['approved_secretary', 'signed'])
+                ->latest()
+                ->limit(5)
+                ->get();
+            $signatureReady = Setting::where('key', 'kepala_signature')->exists();
+
+            return view('kepala_desa.dashboard', compact(
+                'totalQueue',
+                'totalSigned',
+                'totalReturned',
+                'recentSurats',
+                'signatureReady'
+            ));
         }
     }
 }
