@@ -36,11 +36,35 @@ class SuratController extends Controller
             'files.*' => 'nullable|file|mimes:pdf,jpg,png|max:2048'
         ]);
 
-        DB::transaction(function () use ($request) {
+        $suratType = SuratType::findOrFail($request->surat_type_id);
+
+        // Validation for Dynamic Fields
+        $dynamicRules = [];
+        if ($suratType->input_fields) {
+            foreach ($suratType->input_fields as $key => $field) {
+                if (isset($field['required']) && $field['required']) {
+                    $slug = \Illuminate\Support\Str::slug($field['label'], '_');
+                    $dynamicRules["data.{$slug}"] = 'required';
+                }
+            }
+        }
+        $request->validate($dynamicRules);
+
+        DB::transaction(function () use ($request, $suratType) {
+            // Prepare Data JSON
+            $data = [];
+            if ($suratType->input_fields) {
+                foreach ($suratType->input_fields as $field) {
+                    $slug = \Illuminate\Support\Str::slug($field['label'], '_');
+                    $data[$slug] = $request->input("data.{$slug}");
+                }
+            }
+
             $surat = SuratRequest::create([
                 'user_id' => auth()->id(),
                 'surat_type_id' => $request->surat_type_id,
-                'status' => 'submitted'
+                'status' => 'submitted',
+                'data' => $data
             ]);
 
             if ($request->hasFile('files')) {
@@ -86,8 +110,32 @@ class SuratController extends Controller
             'files.*' => 'nullable|file|mimes:pdf,jpg,png|max:2048'
         ]);
 
+        $suratType = SuratType::findOrFail($request->surat_type_id);
+
+        // Validation for Dynamic Fields
+        $dynamicRules = [];
+        if ($suratType->input_fields) {
+            foreach ($suratType->input_fields as $field) {
+                if (isset($field['required']) && $field['required']) {
+                    $slug = \Illuminate\Support\Str::slug($field['label'], '_');
+                    $dynamicRules["data.{$slug}"] = 'required';
+                }
+            }
+        }
+        $request->validate($dynamicRules);
+
+        // Prepare Data JSON
+        $data = [];
+        if ($suratType->input_fields) {
+            foreach ($suratType->input_fields as $field) {
+                $slug = \Illuminate\Support\Str::slug($field['label'], '_');
+                $data[$slug] = $request->input("data.{$slug}");
+            }
+        }
+
         $surat->update([
             'surat_type_id' => $request->surat_type_id,
+            'data' => $data
         ]);
 
         if ($request->hasFile('files')) {

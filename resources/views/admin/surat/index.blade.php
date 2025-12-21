@@ -79,8 +79,52 @@
                                     @endif
                                 </td>
                                 <td>
-                                    {{-- Placeholder for logic to view detail --}}
-                                    <a href="#" class="btn btn-sm btn-info">Detail</a>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('admin.surat.show', $surat->id) }}" class="btn btn-sm btn-outline-info" title="Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        @if($surat->status == 'submitted')
+                                            <form action="{{ route('admin.surat.approve', $surat->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Setujui surat ini?')">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Setujui">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </button>
+                                            </form>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" title="Tolak" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $surat->id }}">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+
+                                            <!-- Reject Modal -->
+                                            <div class="modal fade" id="rejectModal{{ $surat->id }}" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form action="{{ route('admin.surat.reject', $surat->id) }}" method="POST">
+                                                            @csrf
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Tolak Pengajuan Surat</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="form-group">
+                                                                    <label>Alasan Penolakan</label>
+                                                                    <textarea name="notes" class="form-control" rows="3" required placeholder="Masukkan alasan penolakan..."></textarea>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                                <button type="submit" class="btn btn-danger">Tolak</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @elseif($surat->status == 'approved_secretary')
+                                            <a href="{{ route('admin.surat.show', $surat->id) }}" class="btn btn-sm btn-outline-primary" title="Upload TTD">
+                                                <i class="bi bi-upload"></i>
+                                            </a>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                             @empty

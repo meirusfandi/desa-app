@@ -36,9 +36,17 @@ class AdminSuratTypeController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'template_html' => 'required|string',
+            'required_documents' => 'nullable|array',
+            'input_fields' => 'nullable|array',
         ]);
 
-        \App\Models\SuratType::create($request->all());
+        \App\Models\SuratType::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'template_html' => $request->template_html,
+            'required_documents' => $request->required_documents,
+            'input_fields' => $request->input_fields,
+        ]);
 
         return redirect()->route('admin.master.jenis-surat.index')
             ->with('success', 'Jenis Surat berhasil ditambahkan');
@@ -70,10 +78,18 @@ class AdminSuratTypeController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'template_html' => 'required|string',
+            'required_documents' => 'nullable|array',
+            'input_fields' => 'nullable|array',
         ]);
 
         $type = \App\Models\SuratType::findOrFail($id);
-        $type->update($request->all());
+        $type->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'template_html' => $request->template_html,
+            'required_documents' => $request->required_documents,
+            'input_fields' => $request->input_fields,
+        ]);
 
         return redirect()->route('admin.master.jenis-surat.index')
             ->with('success', 'Jenis Surat berhasil diperbarui');

@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SuratRequest;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 class AdminSuratController extends Controller
 {
     private function baseQuery($status)
     {
-        $query = SuratRequest::with(['user', 'suratType'])
+        $query = SuratRequest::with(['user', 'suratType', 'files'])
             ->where('status', $status);
 
         if (request('q')) {
@@ -19,6 +22,64 @@ class AdminSuratController extends Controller
         }
 
         return $query->latest()->paginate(10)->withQueryString();
+    }
+
+    public function show($id)
+    {
+        $surat = SuratRequest::with(['user', 'suratType', 'files'])->findOrFail($id);
+        return view('admin.surat.show', [
+            'title' => 'Detail ' . $surat->suratType->name,
+            'surat' => $surat
+        ]);
+    }
+
+    public function approve($id)
+    {
+        $surat = SuratRequest::findOrFail($id);
+        $surat->update([
+            'status' => 'approved_secretary'
+        ]);
+
+        return redirect()->back()->with('success', 'Surat berhasil disetujui dan diteruskan untuk TTD.');
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $request->validate([
+            'notes' => 'required|string|max:1000'
+        ]);
+
+        $surat = SuratRequest::findOrFail($id);
+        $surat->update([
+            'status' => 'rejected',
+            'notes' => $request->notes
+        ]);
+
+        return redirect()->back()->with('success', 'Surat berhasil ditolak.');
+    }
+
+    public function uploadSigned(Request $request, $id)
+    {
+        $request->validate([
+            'signed_file' => 'required|file|mimes:pdf|max:2048'
+        ]);
+
+        $surat = SuratRequest::findOrFail($id);
+        
+        if ($request->hasFile('signed_file')) {
+            // Delete old file if exists
+            if ($surat->signed_file) {
+                Storage::disk('public')->delete($surat->signed_file);
+            }
+
+            $path = $request->file('signed_file')->store('signed_surat', 'public');
+            $surat->update([
+                'status' => 'signed',
+                'signed_file' => $path
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Surat berhasil diupload dan ditandai selesai.');
     }
 
     public function masuk() {

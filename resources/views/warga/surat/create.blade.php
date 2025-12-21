@@ -50,6 +50,11 @@
                                             </div>
                                         </div>
 
+                                        <!-- Dynamic Fields Container -->
+                                        <div id="dynamic-fields-container" class="col-12 mt-3">
+                                            {{-- Dynamic fields will be rendered here --}}
+                                        </div>
+
                                         <div class="col-12 mt-3">
                                             <div class="alert alert-light-primary color-primary">
                                                 <i class="bi bi-info-circle"></i> Silakan upload dokumen pendukung (KTP, KK, Pengantar RT/RW, dll) sesuai persyaratan layanan.
@@ -97,4 +102,42 @@
         </div>
     </section>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeSelect = document.getElementById('surat_type_id');
+        const container = document.getElementById('dynamic-fields-container');
+        const suratTypes = @json($suratTypes);
+
+        typeSelect.addEventListener('change', function() {
+            const selectedId = this.value;
+            const selectedType = suratTypes.find(t => t.id == selectedId);
+            
+            container.innerHTML = '';
+            
+            if (selectedType && selectedType.input_fields) {
+                selectedType.input_fields.forEach(field => {
+                    const slug = field.label.toLowerCase().replace(/ /g, '_').replace(/[^\w-]+/g, '');
+                    const required = field.required ? 'required' : '';
+                    const label = field.label + (field.required ? ' <span class="text-danger">*</span>' : '');
+                    
+                    let inputHtml = '';
+                    if (field.type === 'textarea') {
+                        inputHtml = `<textarea name="data[${slug}]" class="form-control" ${required}></textarea>`;
+                    } else {
+                        inputHtml = `<input type="${field.type}" name="data[${slug}]" class="form-control" ${required}>`;
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'form-group mb-3';
+                    div.innerHTML = `
+                        <label>${label}</label>
+                        ${inputHtml}
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        });
+    });
+</script>
 @endsection

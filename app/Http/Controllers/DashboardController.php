@@ -23,7 +23,20 @@ class DashboardController extends Controller
             $totalRole = Role::count();
             return view('admin.dashboard', compact('totalSuratMasuk', 'totalSuratSelesai', 'totalJenisSurat', 'totalUser', 'totalRole'));
         } else if ($user->hasRole('sekretaris')) {
-            return view('sekretaris.dashboard');
+            $totalPending = SuratRequest::where('status', 'submitted')->count();
+            $totalProcess = SuratRequest::where('status', 'approved_secretary')->count();
+            $totalCompleted = SuratRequest::where('status', 'signed')->count();
+            $recentSurats = SuratRequest::with(['user', 'suratType'])
+                ->latest()
+                ->limit(5)
+                ->get();
+
+            return view('sekretaris.dashboard', compact(
+                'totalPending',
+                'totalProcess',
+                'totalCompleted',
+                'recentSurats'
+            ));
         } else if ($user->hasRole('kepala_desa')) {
             return view('kepala_desa.dashboard');
         }

@@ -11,7 +11,12 @@ class SuratRequest extends Model
         'surat_type_id',
         'status',
         'notes',
-        'signed_file'
+        'signed_file',
+        'data'
+    ];
+
+    protected $casts = [
+        'data' => 'array'
     ];
 
     public function user()

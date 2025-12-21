@@ -85,6 +85,29 @@
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
+                                    @elseif($surat->status == 'signed')
+                                        <a href="{{ asset('storage/' . $surat->signed_file) }}" target="_blank" class="btn btn-sm btn-success mb-1" title="Download">
+                                            <i class="bi bi-download"></i> Download
+                                        </a>
+                                    @elseif($surat->status == 'rejected')
+                                        <button type="button" class="btn btn-sm btn-outline-danger mb-1" data-bs-toggle="modal" data-bs-target="#reasonModal{{ $surat->id }}">
+                                            <i class="bi bi-info-circle"></i> Alasan
+                                        </button>
+
+                                        <!-- Reason Modal -->
+                                        <div class="modal fade" id="reasonModal{{ $surat->id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Alasan Penolakan</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>{{ $surat->notes }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @else
                                         <span class="badge bg-light-secondary text-secondary">Locked</span>
                                     @endif

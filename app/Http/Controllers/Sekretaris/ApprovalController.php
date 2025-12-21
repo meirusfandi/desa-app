@@ -8,27 +8,61 @@ use App\Models\SuratRequest;
 
 class ApprovalController extends Controller
 {
-    public function index()
+    private const FILTER_STATUSES = [
+        'all',
+        'submitted',
+        'approved_secretary',
+        'signed',
+        'rejected',
+    ];
+
+    private function buildQuery(Request $request, string $status)
     {
+        $query = SuratRequest::with(['user', 'suratType', 'files'])->latest();
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($request->filled('q')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->q . '%');
+            });
+        }
+
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        $status = $request->get('status', 'submitted');
+        if (!in_array($status, self::FILTER_STATUSES, true)) {
+            $status = 'submitted';
+        }
+
         return view('sekretaris.approval.index', [
-            'surats' => SuratRequest::with(['user','suratType','files'])
-                ->where('status', 'submitted')
-                ->latest()
-                ->get()
+            'surats' => $this->buildQuery($request, $status)->paginate(10)->withQueryString(),
+            'currentStatus' => $status,
         ]);
     }
 
     public function show(SuratRequest $surat)
     {
-        return view('sekretaris.approval.show', compact('surat'));
+        $surat->loadMissing(['user', 'suratType', 'files']);
+
+        return view('sekretaris.approval.show', [
+            'surat' => $surat,
+        ]);
     }
 
     public function approve(SuratRequest $surat, Request $request)
     {
-        $request->validate(['notes' => 'required']);
+        $validated = $request->validate([
+            'notes' => 'nullable|string|max:1000',
+        ]);
         $surat->update([
             'status' => 'approved_secretary',
-            'notes' => $request->notes
+            'notes' => $validated['notes'] ?? null,
         ]);
 
         // nanti kita sambungkan ke WhatsApp + Email
@@ -38,10 +72,12 @@ class ApprovalController extends Controller
 
     public function reject(SuratRequest $surat, Request $request)
     {
-        $request->validate(['notes' => 'required']);
+        $validated = $request->validate([
+            'notes' => 'required|string|max:1000',
+        ]);
         $surat->update([
-            'status' => 'rejected_secretary',
-            'notes' => $request->notes
+            'status' => 'rejected',
+            'notes' => $validated['notes'],
         ]);
 
         // nanti kita sambungkan ke WhatsApp + Email

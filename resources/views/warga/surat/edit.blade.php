@@ -39,16 +39,39 @@
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="surat_type_id">Jenis Layanan Surat</label>
-                                                <select name="surat_type_id" id="surat_type_id" class="form-select" required>
+                                                <select name="surat_type_id" id="surat_type_id" class="form-select" required disabled>
                                                     <option value="">-- Pilih Jenis Surat --</option>
                                                     @foreach($suratTypes as $type)
                                                     <option value="{{ $type->id }}" {{ $surat->surat_type_id == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
                                                     @endforeach
                                                 </select>
+                                                {{-- Keep hidden input because select is disabled --}}
+                                                <input type="hidden" name="surat_type_id" value="{{ $surat->surat_type_id }}">
                                                 @error('surat_type_id')
                                                     <small class="text-danger">{{ $message }}</small>
                                                 @enderror
                                             </div>
+                                        </div>
+
+                                        <!-- Dynamic Fields Render -->
+                                        <div class="col-12 mt-3">
+                                            @if($surat->suratType->input_fields)
+                                                @foreach($surat->suratType->input_fields as $field)
+                                                    @php
+                                                        $slug = \Illuminate\Support\Str::slug($field['label'], '_');
+                                                        $value = $surat->data[$slug] ?? '';
+                                                        $required = isset($field['required']) && $field['required'] ? 'required' : '';
+                                                    @endphp
+                                                    <div class="form-group mb-3">
+                                                        <label>{{ $field['label'] }} @if($required)<span class="text-danger">*</span>@endif</label>
+                                                        @if($field['type'] === 'textarea')
+                                                            <textarea name="data[{{ $slug }}]" class="form-control" {{ $required }}>{{ $value }}</textarea>
+                                                        @else
+                                                            <input type="{{ $field['type'] }}" name="data[{{ $slug }}]" value="{{ $value }}" class="form-control" {{ $required }}>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            @endif
                                         </div>
 
                                         <div class="col-12 mt-3">

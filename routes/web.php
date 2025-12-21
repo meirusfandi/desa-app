@@ -38,21 +38,28 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('surat', SuratController::class);
     });
 
-    // ADMIN
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+    // ADMIN & SEKRETARIS
+    Route::middleware('role:admin|sekretaris')->prefix('admin')->name('admin.')->group(function () {
         // DASHBOARD
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        
+
         // SURAT MENYURAT
         Route::prefix('surat')->name('surat.')->group(function () {
             Route::get('/masuk', [AdminSuratController::class, 'masuk'])->name('masuk');
             Route::get('/approved', [AdminSuratController::class, 'approved'])->name('approved');
             Route::get('/rejected', [AdminSuratController::class, 'rejected'])->name('rejected');
-            Route::get('/proses-ttd', [AdminSuratController::class, 'prosesTtd'])->name('proses_ttd');
+            Route::get('/proses-ttd', [AdminSuratController::class, 'prosesTtd'])->name('proses-ttd');
             Route::get('/selesai', [AdminSuratController::class, 'selesai'])->name('selesai');
+
+            // Processing Actions
+            Route::get('/{id}', [AdminSuratController::class, 'show'])->name('show');
+            Route::post('/{id}/approve', [AdminSuratController::class, 'approve'])->name('approve');
+            Route::post('/{id}/reject', [AdminSuratController::class, 'reject'])->name('reject');
+            Route::post('/{id}/upload-signed', [AdminSuratController::class, 'uploadSigned'])->name('upload-signed');
         });
-        // MASTER
-        Route::prefix('master')->name('master.')->group(function () {
+
+        // MASTER (Admin Only)
+        Route::middleware('role:admin')->prefix('master')->name('master.')->group(function () {
             Route::resource('/users', AdminUserController::class);
             Route::resource('/roles', AdminRoleController::class);
             Route::resource('/jenis-surat', AdminSuratTypeController::class);
@@ -64,9 +71,33 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // SEKRETARIS
-    Route::middleware('role:sekretaris')->prefix('sekretaris')->group(function () {
+    Route::middleware('role:sekretaris')->prefix('sekretaris')->name('sekretaris.')->group(function () {
         Route::get('/approval', [ApprovalController::class, 'index'])
             ->name('approval.index');
+
+        // Secretary Surat Management
+        Route::prefix('surat')->name('surat.')->group(function () {
+            Route::get('/masuk', [App\Http\Controllers\Admin\AdminSuratController::class, 'masuk'])
+                ->name('masuk');
+            Route::get('/approved', [App\Http\Controllers\Admin\AdminSuratController::class, 'approved'])
+                ->name('approved');
+            Route::get('/rejected', [App\Http\Controllers\Admin\AdminSuratController::class, 'rejected'])
+                ->name('rejected');
+            Route::get('/proses-ttd', [App\Http\Controllers\Admin\AdminSuratController::class, 'prosesTtd'])
+                ->name('proses-ttd');
+            Route::get('/selesai', [App\Http\Controllers\Admin\AdminSuratController::class, 'selesai'])
+                ->name('selesai');
+
+            // Processing Actions
+            Route::get('/{id}', [App\Http\Controllers\Admin\AdminSuratController::class, 'show'])
+                ->name('show');
+            Route::post('/{id}/approve', [App\Http\Controllers\Admin\AdminSuratController::class, 'approve'])
+                ->name('approve');
+            Route::post('/{id}/reject', [App\Http\Controllers\Admin\AdminSuratController::class, 'reject'])
+                ->name('reject');
+            Route::post('/{id}/upload-signed', [App\Http\Controllers\Admin\AdminSuratController::class, 'uploadSigned'])
+                ->name('upload-signed');
+        });
 
         Route::get('/approval/{surat}', [ApprovalController::class, 'show'])
             ->name('approval.show');
