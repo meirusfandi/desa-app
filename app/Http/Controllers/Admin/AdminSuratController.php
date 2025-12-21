@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SuratRequest;
+use App\Services\NotificationService;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,8 @@ class AdminSuratController extends Controller
             'status' => 'approved_secretary'
         ]);
 
+        app(NotificationService::class)->emailOnSekretarisApproved($surat);
+
         return redirect()->back()->with('success', 'Surat berhasil disetujui dan diteruskan untuk TTD.');
     }
 
@@ -55,6 +58,8 @@ class AdminSuratController extends Controller
             'notes' => $request->notes
         ]);
 
+        app(NotificationService::class)->emailOnSekretarisRejected($surat);
+
         return redirect()->back()->with('success', 'Surat berhasil ditolak.');
     }
 
@@ -65,7 +70,7 @@ class AdminSuratController extends Controller
         ]);
 
         $surat = SuratRequest::findOrFail($id);
-        
+
         if ($request->hasFile('signed_file')) {
             // Delete old file if exists
             if ($surat->signed_file) {
@@ -77,6 +82,8 @@ class AdminSuratController extends Controller
                 'status' => 'signed',
                 'signed_file' => $path
             ]);
+
+            app(NotificationService::class)->emailOnKepalaDesaSigned($surat);
         }
 
         return redirect()->back()->with('success', 'Surat berhasil diupload dan ditandai selesai.');

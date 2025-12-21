@@ -54,7 +54,7 @@ class SuratController extends Controller
         }
         $request->validate($dynamicRules);
 
-        DB::transaction(function () use ($request, $suratType) {
+        $surat = DB::transaction(function () use ($request, $suratType) {
             // Prepare Data JSON
             $data = [];
             if ($suratType->input_fields) {
@@ -92,10 +92,12 @@ class SuratController extends Controller
                     ]);
                 }
             }
+
+            return $surat;
         });
 
-        // Notification logic (commented out if service not available yet, but kept per existing code)
-        // app(NotificationService::class)->notifySecretary("Surat baru diajukan");
+        // Email to sekretaris when warga submits
+        app(NotificationService::class)->emailSekretarisOnWargaSubmitted($surat);
 
         return redirect()->route('warga.surat.index')->with('success', 'Pengajuan surat berhasil dikirim.');
     }

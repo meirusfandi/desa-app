@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sekretaris;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SuratRequest;
+use App\Services\NotificationService;
 
 class ApprovalController extends Controller
 {
@@ -65,7 +66,8 @@ class ApprovalController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        // nanti kita sambungkan ke WhatsApp + Email
+        app(NotificationService::class)->emailOnSekretarisApproved($surat);
+
         return redirect()->route('sekretaris.approval.index')
             ->with('success', 'Surat disetujui');
     }
@@ -80,7 +82,8 @@ class ApprovalController extends Controller
             'notes' => $validated['notes'],
         ]);
 
-        // nanti kita sambungkan ke WhatsApp + Email
+        app(NotificationService::class)->emailOnSekretarisRejected($surat);
+
         return redirect()->route('sekretaris.approval.index')
             ->with('success', 'Surat ditolak');
     }

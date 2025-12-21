@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\SuratRequest;
 use App\Services\PdfService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -92,6 +93,8 @@ class SignatureController extends Controller
             'signed_file' => $path,
             'notes' => $validated['notes'] ?? $surat->notes,
         ]);
+
+        app(NotificationService::class)->emailOnKepalaDesaSigned($surat);
 
         return redirect()->route('kepala.surat.show', $surat)
             ->with('success', 'Surat berhasil ditandatangani dan dikirim ke warga.');
