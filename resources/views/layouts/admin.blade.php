@@ -69,7 +69,7 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
-
+                    @role('admin')
                     <li class="sidebar-item has-sub {{ request()->routeIs('admin.surat.*') ? 'active' : '' }}">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-envelope"></i>
@@ -94,6 +94,7 @@
                             </li>
                         </ul>
                     </li>
+                    @endrole
                     @role('sekretaris')
                     <li class="sidebar-item {{ request()->routeIs('sekretaris.approval.*') ? 'active' : '' }}">
                         <a href="{{ route('sekretaris.approval.index') }}" class='sidebar-link'>

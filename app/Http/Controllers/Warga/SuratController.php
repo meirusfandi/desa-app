@@ -8,18 +8,22 @@ use App\Models\SuratRequest;
 use App\Models\SuratType;
 use App\Models\SuratFile;
 use App\Services\NotificationService;
+use App\Services\DocxTemplateService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class SuratController extends Controller
 {
     public function index()
     {
+        $userId = Auth::id();
         $surats = SuratRequest::with('suratType')
-            ->where('user_id', auth()->id())
+            ->where('user_id', $userId)
             ->latest()
             ->paginate(10);
-            
+
         return view('warga.surat.index', compact('surats'));
     }
 
@@ -43,8 +47,8 @@ class SuratController extends Controller
         if ($suratType->input_fields) {
             foreach ($suratType->input_fields as $key => $field) {
                 if (isset($field['required']) && $field['required']) {
-                    $slug = \Illuminate\Support\Str::slug($field['label'], '_');
-                    $dynamicRules["data.{$slug}"] = 'required';
+                    $fieldKey = $field['key'] ?? Str::slug($field['label'], '_');
+                    $dynamicRules["data.{$fieldKey}"] = 'required';
                 }
             }
         }
@@ -55,17 +59,28 @@ class SuratController extends Controller
             $data = [];
             if ($suratType->input_fields) {
                 foreach ($suratType->input_fields as $field) {
-                    $slug = \Illuminate\Support\Str::slug($field['label'], '_');
-                    $data[$slug] = $request->input("data.{$slug}");
+                    $fieldKey = $field['key'] ?? Str::slug($field['label'], '_');
+                    $data[$fieldKey] = $request->input("data.{$fieldKey}");
                 }
             }
 
             $surat = SuratRequest::create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'surat_type_id' => $request->surat_type_id,
                 'status' => 'submitted',
                 'data' => $data
             ]);
+
+            // Generate filled DOCX if template exists
+            $surat->loadMissing(['user', 'suratType']);
+            $docxPath = app(DocxTemplateService::class)->generateFilledDocx($surat);
+            if ($docxPath) {
+                SuratFile::create([
+                    'surat_request_id' => $surat->id,
+                    'file_path' => $docxPath,
+                    'file_type' => 'generated_docx',
+                ]);
+            }
 
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $key => $file) {
@@ -87,8 +102,8 @@ class SuratController extends Controller
 
     public function edit($id)
     {
-        $surat = SuratRequest::where('user_id', auth()->id())->findOrFail($id);
-        
+        $surat = SuratRequest::where('user_id', Auth::id())->findOrFail($id);
+
         if ($surat->status !== 'submitted') {
             return redirect()->back()->with('error', 'Surat yang sudah diproses tidak dapat diedit.');
         }
@@ -99,7 +114,7 @@ class SuratController extends Controller
 
     public function update(Request $request, $id)
     {
-        $surat = SuratRequest::where('user_id', auth()->id())->findOrFail($id);
+        $surat = SuratRequest::where('user_id', Auth::id())->findOrFail($id);
 
         if ($surat->status !== 'submitted') {
             return redirect()->back()->with('error', 'Surat yang sudah diproses tidak dapat diedit.');
@@ -117,8 +132,8 @@ class SuratController extends Controller
         if ($suratType->input_fields) {
             foreach ($suratType->input_fields as $field) {
                 if (isset($field['required']) && $field['required']) {
-                    $slug = \Illuminate\Support\Str::slug($field['label'], '_');
-                    $dynamicRules["data.{$slug}"] = 'required';
+                    $fieldKey = $field['key'] ?? Str::slug($field['label'], '_');
+                    $dynamicRules["data.{$fieldKey}"] = 'required';
                 }
             }
         }
@@ -128,8 +143,8 @@ class SuratController extends Controller
         $data = [];
         if ($suratType->input_fields) {
             foreach ($suratType->input_fields as $field) {
-                $slug = \Illuminate\Support\Str::slug($field['label'], '_');
-                $data[$slug] = $request->input("data.{$slug}");
+                $fieldKey = $field['key'] ?? Str::slug($field['label'], '_');
+                $data[$fieldKey] = $request->input("data.{$fieldKey}");
             }
         }
 
@@ -138,9 +153,26 @@ class SuratController extends Controller
             'data' => $data
         ]);
 
+        // Re-generate filled DOCX (replace old generated docx if any)
+        $surat->loadMissing(['user', 'suratType', 'files']);
+        $existingGenerated = $surat->files->firstWhere('file_type', 'generated_docx');
+        if ($existingGenerated) {
+            Storage::disk('public')->delete($existingGenerated->file_path);
+            $existingGenerated->delete();
+        }
+
+        $docxPath = app(DocxTemplateService::class)->generateFilledDocx($surat);
+        if ($docxPath) {
+            SuratFile::create([
+                'surat_request_id' => $surat->id,
+                'file_path' => $docxPath,
+                'file_type' => 'generated_docx',
+            ]);
+        }
+
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $key => $file) {
-                // Delete old file if exists for this type? Or just append? 
+                // Delete old file if exists for this type? Or just append?
                 // Simple logic: Add new files. For stricter replace, need logic to delete old SuratFile by type.
                 // Assuming append for now or handled by UI keying.
                 $path = $file->store('surat_files', 'public');
@@ -157,7 +189,7 @@ class SuratController extends Controller
 
     public function destroy($id)
     {
-        $surat = SuratRequest::where('user_id', auth()->id())->findOrFail($id);
+        $surat = SuratRequest::where('user_id', Auth::id())->findOrFail($id);
 
         if ($surat->status !== 'submitted') {
             return redirect()->back()->with('error', 'Hanya surat dengan status "submitted" yang dapat dihapus.');

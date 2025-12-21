@@ -31,7 +31,7 @@
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <form class="form form-vertical" method="POST" action="{{ route('admin.master.jenis-surat.update', $type->id) }}">
+                            <form class="form form-vertical" method="POST" action="{{ route('admin.master.jenis-surat.update', $type->id) }}" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <div class="form-body">
@@ -39,7 +39,7 @@
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="name">Nama Layanan</label>
-                                                <input type="text" id="name" class="form-control @error('name') is-invalid @enderror" 
+                                                <input type="text" id="name" class="form-control @error('name') is-invalid @enderror"
                                                     name="name" placeholder="Contoh: Surat Keterangan Usaha" value="{{ old('name', $type->name) }}">
                                                 @error('name')
                                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -49,14 +49,14 @@
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="description">Deskripsi (Opsional)</label>
-                                                <textarea id="description" class="form-control @error('description') is-invalid @enderror" 
+                                                <textarea id="description" class="form-control @error('description') is-invalid @enderror"
                                                     name="description" rows="3" placeholder="Deskripsi singkat tentang layanan ini">{{ old('description', $type->description) }}</textarea>
                                                 @error('description')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
-                                        
+
                                         <!-- Dynamic Form Builder -->
                                         <div class="col-12 mt-3">
                                             <h5 class="mb-3">Form Builder (Input Dinamis)</h5>
@@ -82,16 +82,29 @@
 
                                         <div class="col-12 mt-4">
                                             <div class="form-group">
-                                                <label for="template_html">Template HTML (Surat)</label>
-                                                <textarea id="template_html" class="form-control @error('template_html') is-invalid @enderror" 
-                                                    name="template_html" rows="10" placeholder="Masukkan kode HTML untuk template surat...">{{ old('template_html', $type->template_html) }}</textarea>
+                                                <label for="template_doc">Template DOCX (Surat)</label>
+                                                @if($type->template_doc_original_name)
+                                                    <div class="text-muted mb-2">Template saat ini: <b>{{ $type->template_doc_original_name }}</b></div>
+                                                @endif
+                                                <input type="file" id="template_doc" class="form-control @error('template_doc') is-invalid @enderror" name="template_doc" accept=".docx">
+                                                @error('template_doc')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                                <small class="text-muted">Gunakan placeholder <b>${field_key}</b> di file Word. Contoh: <b>${nama_usaha}</b>.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 mt-3">
+                                            <div class="form-group">
+                                                <label for="template_html">Template HTML (Opsional)</label>
+                                                <textarea id="template_html" class="form-control @error('template_html') is-invalid @enderror"
+                                                    name="template_html" rows="6" placeholder="(Opsional) tidak digunakan jika memakai DOCX">{{ old('template_html', $type->template_html) }}</textarea>
                                                 @error('template_html')
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
-                                                <small class="text-muted">Gunakan placeholder {label_input} untuk data dinamis. Contoh: {nama_usaha}</small>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-12 d-flex justify-content-end mt-3">
                                             <button type="submit" class="btn btn-primary me-1 mb-1">Simpan Perubahan</button>
                                             <a href="{{ route('admin.master.jenis-surat.index') }}" class="btn btn-light-secondary me-1 mb-1">Batal</a>
@@ -113,11 +126,12 @@
         const addBtn = document.getElementById('add-field-btn');
         let fieldIndex = 0;
 
-        function addFieldRow(label = '', type = 'text', required = false) {
+        function addFieldRow(label = '', type = 'text', required = false, key = '') {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>
                     <input type="text" name="input_fields[${fieldIndex}][label]" class="form-control form-control-sm" placeholder="Label Field" value="${label}" required>
+                    <input type="hidden" name="input_fields[${fieldIndex}][key]" value="${key}">
                 </td>
                 <td>
                     <select name="input_fields[${fieldIndex}][type]" class="form-select form-select-sm">
@@ -153,11 +167,11 @@
         // Populate existing data
         @if(old('input_fields'))
             @foreach(old('input_fields') as $field)
-                addFieldRow("{{ $field['label'] }}", "{{ $field['type'] }}", {{ isset($field['required']) ? 'true' : 'false' }});
+                addFieldRow("{{ $field['label'] ?? '' }}", "{{ $field['type'] ?? 'text' }}", {{ isset($field['required']) ? 'true' : 'false' }}, "{{ $field['key'] ?? '' }}");
             @endforeach
         @elseif($type->input_fields)
             @foreach($type->input_fields as $field)
-                addFieldRow("{{ $field['label'] }}", "{{ $field['type'] }}", {{ isset($field['required']) ? 'true' : 'false' }});
+                addFieldRow("{{ $field['label'] ?? '' }}", "{{ $field['type'] ?? 'text' }}", {{ isset($field['required']) ? 'true' : 'false' }}, "{{ $field['key'] ?? '' }}");
             @endforeach
         @endif
     });

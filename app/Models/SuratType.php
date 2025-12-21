@@ -10,6 +10,8 @@ class SuratType extends Model
         'name',
         'description',
         'template_html',
+        'template_doc_path',
+        'template_doc_original_name',
         'required_documents',
         'input_fields',
     ];

@@ -67,7 +67,7 @@
                                                 <input type="file" class="form-control" name="files[doc_1]" id="doc_1" required>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="doc_2">Dokumen 2 (Opsional)</label>
@@ -81,7 +81,7 @@
                                                 <input type="file" class="form-control" name="files[doc_3]" id="doc_3">
                                             </div>
                                         </div>
-                                        
+
                                         @error('files.*')
                                             <div class="col-12">
                                                 <small class="text-danger">{{ $message }}</small>
@@ -112,20 +112,20 @@
         typeSelect.addEventListener('change', function() {
             const selectedId = this.value;
             const selectedType = suratTypes.find(t => t.id == selectedId);
-            
+
             container.innerHTML = '';
-            
+
             if (selectedType && selectedType.input_fields) {
                 selectedType.input_fields.forEach(field => {
-                    const slug = field.label.toLowerCase().replace(/ /g, '_').replace(/[^\w-]+/g, '');
+                    const key = field.key ? field.key : field.label.toLowerCase().replace(/ /g, '_').replace(/[^\w-]+/g, '');
                     const required = field.required ? 'required' : '';
                     const label = field.label + (field.required ? ' <span class="text-danger">*</span>' : '');
-                    
+
                     let inputHtml = '';
                     if (field.type === 'textarea') {
-                        inputHtml = `<textarea name="data[${slug}]" class="form-control" ${required}></textarea>`;
+                        inputHtml = `<textarea name="data[${key}]" class="form-control" ${required}></textarea>`;
                     } else {
-                        inputHtml = `<input type="${field.type}" name="data[${slug}]" class="form-control" ${required}>`;
+                        inputHtml = `<input type="${field.type}" name="data[${key}]" class="form-control" ${required}>`;
                     }
 
                     const div = document.createElement('div');

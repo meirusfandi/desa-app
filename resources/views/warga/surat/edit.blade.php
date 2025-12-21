@@ -58,16 +58,16 @@
                                             @if($surat->suratType->input_fields)
                                                 @foreach($surat->suratType->input_fields as $field)
                                                     @php
-                                                        $slug = \Illuminate\Support\Str::slug($field['label'], '_');
-                                                        $value = $surat->data[$slug] ?? '';
+                                                        $key = $field['key'] ?? \Illuminate\Support\Str::slug($field['label'], '_');
+                                                        $value = $surat->data[$key] ?? '';
                                                         $required = isset($field['required']) && $field['required'] ? 'required' : '';
                                                     @endphp
                                                     <div class="form-group mb-3">
                                                         <label>{{ $field['label'] }} @if($required)<span class="text-danger">*</span>@endif</label>
                                                         @if($field['type'] === 'textarea')
-                                                            <textarea name="data[{{ $slug }}]" class="form-control" {{ $required }}>{{ $value }}</textarea>
+                                                            <textarea name="data[{{ $key }}]" class="form-control" {{ $required }}>{{ $value }}</textarea>
                                                         @else
-                                                            <input type="{{ $field['type'] }}" name="data[{{ $slug }}]" value="{{ $value }}" class="form-control" {{ $required }}>
+                                                            <input type="{{ $field['type'] }}" name="data[{{ $key }}]" value="{{ $value }}" class="form-control" {{ $required }}>
                                                         @endif
                                                     </div>
                                                 @endforeach
@@ -86,14 +86,14 @@
                                                 <input type="file" class="form-control" name="files[doc_add_1]" id="doc_add_1">
                                             </div>
                                         </div>
-                                        
+
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="doc_add_2">Dokumen Tambahan 2</label>
                                                 <input type="file" class="form-control" name="files[doc_add_2]" id="doc_add_2">
                                             </div>
                                         </div>
-                                        
+
                                         @error('files.*')
                                             <div class="col-12">
                                                 <small class="text-danger">{{ $message }}</small>
