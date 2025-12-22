@@ -15,6 +15,26 @@ class AdminSettingController extends Controller
 
     public function update(Request $request)
     {
+        $request->validate([
+            'app_name' => 'nullable|string|max:255',
+            'app_description' => 'nullable|string|max:2000',
+            'app_email' => 'nullable|email|max:255',
+            'app_phone' => 'nullable|string|max:50',
+            'app_address' => 'nullable|string|max:2000',
+
+            'kabupaten_name' => 'nullable|string|max:255',
+            'kecamatan_name' => 'nullable|string|max:255',
+            'desa_name' => 'nullable|string|max:255',
+            'full_address' => 'nullable|string|max:2000',
+            'post_code' => 'nullable|string|max:20',
+
+            'app_logo' => 'nullable|file|mimes:png,jpg,jpeg,webp,svg|max:2048',
+            'app_favicon' => 'nullable|file|mimes:png,jpg,jpeg,webp,svg,ico|max:2048',
+            'logo_desa' => 'nullable|file|mimes:png,jpg,jpeg,webp,svg|max:2048',
+            'logo_kecamatan' => 'nullable|file|mimes:png,jpg,jpeg,webp,svg|max:2048',
+            'logo_kabupaten' => 'nullable|file|mimes:png,jpg,jpeg,webp,svg|max:2048',
+        ]);
+
         $data = $request->except(['_token', '_method']);
 
         // Handle file uploads

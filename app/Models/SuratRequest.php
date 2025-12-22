@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class SuratRequest extends Model
 {
@@ -32,5 +33,37 @@ class SuratRequest extends Model
     public function files()
     {
         return $this->hasMany(SuratFile::class);
+    }
+
+    public function statusHistories()
+    {
+        return $this->hasMany(SuratRequestStatusHistory::class)->latest();
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (SuratRequest $surat) {
+            SuratRequestStatusHistory::create([
+                'surat_request_id' => $surat->id,
+                'from_status' => null,
+                'to_status' => $surat->status,
+                'notes' => $surat->notes,
+                'changed_by_user_id' => Auth::id(),
+            ]);
+        });
+
+        static::updated(function (SuratRequest $surat) {
+            if (! $surat->wasChanged('status')) {
+                return;
+            }
+
+            SuratRequestStatusHistory::create([
+                'surat_request_id' => $surat->id,
+                'from_status' => $surat->getOriginal('status'),
+                'to_status' => $surat->status,
+                'notes' => $surat->notes,
+                'changed_by_user_id' => Auth::id(),
+            ]);
+        });
     }
 }

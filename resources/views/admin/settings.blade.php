@@ -45,7 +45,7 @@
                                             <h6>Informasi Umum</h6>
                                             <div class="form-group">
                                                 <label for="app_name">Nama Aplikasi</label>
-                                                <input type="text" id="app_name" class="form-control" 
+                                                <input type="text" id="app_name" class="form-control"
                                                     name="app_name" value="{{ $settings['app_name'] ?? config('app.name') }}">
                                             </div>
                                             <div class="form-group">
@@ -57,17 +57,50 @@
                                             <h6>Kontak</h6>
                                             <div class="form-group">
                                                 <label for="app_email">Email</label>
-                                                <input type="email" id="app_email" class="form-control" 
+                                                <input type="email" id="app_email" class="form-control"
                                                     name="app_email" value="{{ $settings['app_email'] ?? '' }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="app_phone">Telepon</label>
-                                                <input type="text" id="app_phone" class="form-control" 
+                                                <input type="text" id="app_phone" class="form-control"
                                                     name="app_phone" value="{{ $settings['app_phone'] ?? '' }}">
                                             </div>
                                             <div class="form-group">
                                                 <label for="app_address">Alamat</label>
                                                 <textarea id="app_address" class="form-control" name="app_address" rows="2">{{ $settings['app_address'] ?? '' }}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <h6>Wilayah</h6>
+                                            <div class="form-group">
+                                                <label for="kabupaten_name">Nama Kabupaten</label>
+                                                <input type="text" id="kabupaten_name" class="form-control"
+                                                    name="kabupaten_name" value="{{ $settings['kabupaten_name'] ?? '' }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="kecamatan_name">Nama Kecamatan</label>
+                                                <input type="text" id="kecamatan_name" class="form-control"
+                                                    name="kecamatan_name" value="{{ $settings['kecamatan_name'] ?? '' }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="desa_name">Nama Kelurahan/Desa</label>
+                                                <input type="text" id="desa_name" class="form-control"
+                                                    name="desa_name" value="{{ $settings['desa_name'] ?? '' }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Alamat Lengkap</h6>
+                                            <div class="form-group">
+                                                <label for="full_address">Alamat Lengkap</label>
+                                                <textarea id="full_address" class="form-control" name="full_address" rows="3">{{ $settings['full_address'] ?? '' }}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="post_code">Kode Pos</label>
+                                                <input type="text" id="post_code" class="form-control"
+                                                    name="post_code" value="{{ $settings['post_code'] ?? '' }}">
                                             </div>
                                         </div>
                                     </div>
@@ -125,7 +158,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-12 d-flex justify-content-end mt-3">
                                         <button type="submit" class="btn btn-primary me-1 mb-1">Simpan Pengaturan</button>
                                     </div>

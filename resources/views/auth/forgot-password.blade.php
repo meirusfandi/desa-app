@@ -1,4 +1,11 @@
 <x-guest-layout>
+    @php
+        $appName = app_setting('app_name', config('app.name'));
+
+        $appLogo = app_setting('app_logo');
+        $logoSrc = $appLogo ? asset('storage/' . $appLogo) : asset('mazer/assets/compiled/svg/logo.svg');
+    @endphp
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -6,7 +13,10 @@
         <div class="col-lg-5 col-12">
             <div id="auth-left">
                 <div class="auth-logo">
-                    <a href="{{ url('/') }}"><img src="{{ asset('mazer/assets/compiled/svg/logo.svg') }}" alt="Logo"></a>
+                    <a href="{{ url('/') }}" class="d-inline-flex align-items-center gap-2">
+                        <img src="{{ $logoSrc }}" alt="{{ $appName }}" style="height: 45px">
+                        <span class="fw-bold">{{ $appName }}</span>
+                    </a>
                 </div>
                 <h1 class="auth-title">Forgot Password</h1>
                 <p class="auth-subtitle mb-5">Input your email and we will send you reset password link.</p>
@@ -25,7 +35,7 @@
                             </div>
                         @enderror
                     </div>
-                    
+
                     <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Send Reset Password Link</button>
                 </form>
 

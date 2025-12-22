@@ -12,10 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         $tableNames = config('permission.table_names');
+        $rolesTable = $tableNames['roles'];
 
-        Schema::table($tableNames['roles'], function (Blueprint $table) {
-            $table->dropColumn('slug');
-            $table->string('role_name')->nullable()->after('name');
+        Schema::table($rolesTable, function (Blueprint $table) use ($rolesTable) {
+            if (Schema::hasColumn($rolesTable, 'slug')) {
+                $table->dropColumn('slug');
+            }
+
+            if (! Schema::hasColumn($rolesTable, 'role_name')) {
+                $table->string('role_name')->nullable()->after('name');
+            }
         });
     }
 
@@ -25,10 +31,16 @@ return new class extends Migration
     public function down(): void
     {
         $tableNames = config('permission.table_names');
+        $rolesTable = $tableNames['roles'];
 
-        Schema::table($tableNames['roles'], function (Blueprint $table) {
-            $table->dropColumn('role_name');
-            $table->string('slug')->nullable()->after('name');
+        Schema::table($rolesTable, function (Blueprint $table) use ($rolesTable) {
+            if (Schema::hasColumn($rolesTable, 'role_name')) {
+                $table->dropColumn('role_name');
+            }
+
+            if (! Schema::hasColumn($rolesTable, 'slug')) {
+                $table->string('slug')->nullable()->after('name');
+            }
         });
     }
 };

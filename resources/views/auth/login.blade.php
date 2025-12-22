@@ -1,9 +1,19 @@
 <x-guest-layout>
+    @php
+        $appName = app_setting('app_name', config('app.name'));
+
+        $appLogo = app_setting('app_logo');
+        $logoSrc = $appLogo ? asset('storage/' . $appLogo) : asset('mazer/assets/compiled/svg/logo.svg');
+    @endphp
+
     <div class="row h-100">
         <div class="col-lg-5 col-12">
             <div id="auth-left">
                 <div class="auth-logo">
-                    <a href="{{ url('/') }}"><img src="{{ asset('mazer/assets/compiled/svg/logo.svg') }}" alt="Logo"></a>
+                    <a href="{{ url('/') }}" class="d-inline-flex align-items-center gap-2">
+                        <img src="{{ $logoSrc }}" alt="{{ $appName }}" style="height: 45px">
+                        <span class="fw-bold">{{ $appName }}</span>
+                    </a>
                 </div>
                 <h1 class="auth-title">Log in.</h1>
                 <p class="auth-subtitle mb-5">Log in with your data that you entered during registration.</p>
