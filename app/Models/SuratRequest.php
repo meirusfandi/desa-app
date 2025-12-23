@@ -13,11 +13,13 @@ class SuratRequest extends Model
         'status',
         'notes',
         'signed_file',
-        'data'
+        'data',
+        'signed_at',
     ];
 
     protected $casts = [
-        'data' => 'array'
+        'data' => 'array',
+        'signed_at' => 'datetime',
     ];
 
     public function user()

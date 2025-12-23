@@ -86,12 +86,15 @@ class SignatureController extends Controller
             Storage::disk('public')->delete($surat->signed_file);
         }
 
+        $signedAt = now();
+        $surat->signed_at = $signedAt;
         $path = $this->pdfService->generateSurat($surat, $signatureSetting->value, auth()->user()->name ?? 'Kepala Desa');
 
         $surat->update([
             'status' => 'signed',
             'signed_file' => $path,
             'notes' => $validated['notes'] ?? $surat->notes,
+            'signed_at' => $signedAt,
         ]);
 
         app(NotificationService::class)->emailOnKepalaDesaSigned($surat);

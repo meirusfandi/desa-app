@@ -43,6 +43,10 @@
         .signature .label {
             margin-bottom: 60px;
         }
+        .signature .signature-location {
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
         .signature-image {
             max-width: 220px;
             max-height: 120px;
@@ -113,14 +117,19 @@
     </table>
 
     <div class="signature">
-        <div class="label">Mengetahui,<br>Kepala Desa</div>
+        @if(!empty($signatureMeta['location']) || !empty($signatureMeta['date']))
+            <div class="signature-location">
+                {{ trim(implode(', ', array_filter([$signatureMeta['location'] ?? null, $signatureMeta['date'] ?? null]))) }}
+            </div>
+        @endif
+        <div class="label">{{ $signatureMeta['role'] ?? 'Kepala Desa' }}</div>
         @if($signature)
             <img src="data:{{ $signature['mime'] }};base64,{{ $signature['data'] }}" alt="TTD Kepala Desa" class="signature-image">
         @else
             <div class="signature-placeholder">TTD belum diunggah</div>
         @endif
         <div class="signed-name" style="margin-top: 12px; font-weight: bold;">
-            {{ $signedBy ?? 'Kepala Desa' }}
+            {{ $signatureMeta['name'] ?? 'Kepala Desa' }}
         </div>
     </div>
 </body>

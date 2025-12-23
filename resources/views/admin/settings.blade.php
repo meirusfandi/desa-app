@@ -73,6 +73,36 @@
                                     </div>
                                     <hr>
                                     <div class="row mt-3">
+                                        <div class="col-md-12">
+                                            <h6>Penandatangan Kepala Desa</h6>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="signature_location">Lokasi Penandatanganan</label>
+                                                <input type="text" id="signature_location" class="form-control"
+                                                    name="signature_location" value="{{ $settings['signature_location'] ?? ($settings['desa_name'] ?? '') }}" placeholder="Contoh: Bengkaung">
+                                                <small class="text-muted">Ditampilkan di depan tanggal, contoh: "Bengkaung, 23 Desember 2025".</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="signature_role">Jabatan Penandatangan</label>
+                                                <input type="text" id="signature_role" class="form-control"
+                                                    name="signature_role" value="{{ $settings['signature_role'] ?? (($settings['desa_name'] ?? null) ? 'Kepala Desa '.$settings['desa_name'] : 'Kepala Desa') }}" placeholder="Contoh: Kepala Desa Bengkaung">
+                                                <small class="text-muted">Teks di bagian "Mengetahui" sebelum tanda tangan.</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="signature_name">Nama Kepala Desa</label>
+                                                <input type="text" id="signature_name" class="form-control"
+                                                    name="signature_name" value="{{ $settings['signature_name'] ?? '' }}" placeholder="Contoh: H. FAIZUL BAYANI, M. Pd">
+                                                <small class="text-muted">Ditampilkan tepat di bawah gambar tanda tangan.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row mt-3">
                                         <div class="col-md-6">
                                             <h6>Wilayah</h6>
                                             <div class="form-group">

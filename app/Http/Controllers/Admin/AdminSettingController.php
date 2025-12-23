@@ -28,6 +28,10 @@ class AdminSettingController extends Controller
             'full_address' => 'nullable|string|max:2000',
             'post_code' => 'nullable|string|max:20',
 
+            'signature_location' => 'nullable|string|max:255',
+            'signature_role' => 'nullable|string|max:255',
+            'signature_name' => 'nullable|string|max:255',
+
             'app_logo' => 'nullable|file|mimes:png,jpg,jpeg,webp,svg|max:2048',
             'app_favicon' => 'nullable|file|mimes:png,jpg,jpeg,webp,svg,ico|max:2048',
             'logo_desa' => 'nullable|file|mimes:png,jpg,jpeg,webp,svg|max:2048',

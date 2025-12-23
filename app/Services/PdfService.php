@@ -20,14 +20,31 @@ class PdfService
             ];
         }
 
+        $signatureMeta = $this->signatureMeta($surat, $signedBy);
+
         $pdf = Pdf::loadView('pdf.surat', [
             'surat' => $surat,
             'signature' => $signature,
-            'signedBy' => $signedBy,
+            'signatureMeta' => $signatureMeta,
         ])->output();
 
         Storage::disk('public')->put($relativePath, $pdf);
 
         return $relativePath;
     }
+
+        private function signatureMeta(SuratRequest $surat, ?string $signedBy): array
+        {
+            $desaName = app_setting('desa_name');
+            $location = app_setting('signature_location', $desaName);
+            $roleDefault = $desaName ? 'Kepala Desa ' . $desaName : 'Kepala Desa';
+            $signedAt = $surat->signed_at ?? now();
+
+            return [
+                'location' => $location,
+                'date' => optional($signedAt)->translatedFormat('d F Y'),
+                'role' => app_setting('signature_role', $roleDefault),
+                'name' => app_setting('signature_name', $signedBy ?? $roleDefault),
+            ];
+        }
 }

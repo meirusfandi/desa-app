@@ -9,6 +9,15 @@ use ZipArchive;
 
 class DocxTemplateService
 {
+    private const RESERVED_PLACEHOLDERS = [
+        'nama_pemohon',
+        'tanggal_pengajuan',
+        'signature_location',
+        'signature_date',
+        'signature_role',
+        'signature_name',
+    ];
+
     /**
      * Extract placeholder keys from a DOCX file.
      *
@@ -37,7 +46,8 @@ class DocxTemplateService
             }
         }
 
-        $placeholders = [];
+        $seen = [];
+        $orderedKeys = [];
         foreach ($xmlFiles as $name) {
             $xml = $zip->getFromName($name);
             if (!is_string($xml) || $xml === '') {
@@ -61,17 +71,17 @@ class DocxTemplateService
 
             if (preg_match_all('/\$\{([A-Za-z0-9_\-\.]+)\}/', $text, $m)) {
                 foreach ($m[1] as $key) {
-                    $placeholders[$key] = true;
+                    if (!isset($seen[$key])) {
+                        $seen[$key] = true;
+                        $orderedKeys[] = $key;
+                    }
                 }
             }
         }
 
         $zip->close();
 
-        $keys = array_keys($placeholders);
-        sort($keys);
-
-        return $keys;
+        return $orderedKeys;
     }
 
     /**
@@ -97,12 +107,15 @@ class DocxTemplateService
 
         $data = (array) ($surat->data ?? []);
         foreach ($data as $key => $value) {
+            if (in_array($key, self::RESERVED_PLACEHOLDERS, true)) {
+                continue;
+            }
             $processor->setValue((string) $key, (string) $value);
         }
 
-        // Useful defaults
-        $processor->setValue('nama_pemohon', (string) ($surat->user?->name ?? ''));
-        $processor->setValue('tanggal_pengajuan', optional($surat->created_at)->format('Y-m-d'));
+        foreach ($this->systemPlaceholderValues($surat) as $key => $value) {
+            $processor->setValue($key, (string) $value);
+        }
 
         $relativeOut = 'generated_surat/surat-' . $surat->id . '-' . time() . '.docx';
         $absoluteOut = $disk->path($relativeOut);
@@ -115,5 +128,25 @@ class DocxTemplateService
         $processor->saveAs($absoluteOut);
 
         return $relativeOut;
+    }
+
+    public static function reservedPlaceholders(): array
+    {
+        return self::RESERVED_PLACEHOLDERS;
+    }
+
+    private function systemPlaceholderValues(SuratRequest $surat): array
+    {
+        $desaName = app_setting('desa_name');
+        $defaultRole = $desaName ? 'Kepala Desa ' . $desaName : 'Kepala Desa';
+
+        return [
+            'nama_pemohon' => (string) ($surat->user?->name ?? ''),
+            'tanggal_pengajuan' => optional($surat->created_at)->translatedFormat('d F Y'),
+            'signature_location' => (string) app_setting('signature_location', $desaName ?? ''),
+            'signature_date' => optional($surat->signed_at)->translatedFormat('d F Y'),
+            'signature_role' => (string) app_setting('signature_role', $defaultRole),
+            'signature_name' => (string) app_setting('signature_name', ''),
+        ];
     }
 }

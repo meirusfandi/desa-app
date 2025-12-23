@@ -14,10 +14,6 @@ use Illuminate\Support\Facades\Notification;
 
 class NotificationService
 {
-    public function __construct(
-        protected WhatsAppService $wa,
-    ) {
-    }
 
     /**
      * Warga creates request -> email to sekretaris.

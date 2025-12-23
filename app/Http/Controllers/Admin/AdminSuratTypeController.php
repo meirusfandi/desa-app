@@ -55,6 +55,7 @@ class AdminSuratTypeController extends Controller
 
             $keys = app(DocxTemplateService::class)
                 ->extractPlaceholdersFromDocx(Storage::disk('public')->path($templateDocPath));
+            $keys = array_values(array_diff($keys, DocxTemplateService::reservedPlaceholders()));
 
             $inputFields = array_values(array_map(function (string $key) {
                 $label = ucwords(str_replace('_', ' ', $key));
@@ -141,6 +142,7 @@ class AdminSuratTypeController extends Controller
 
             $keys = app(DocxTemplateService::class)
                 ->extractPlaceholdersFromDocx(Storage::disk('public')->path($templateDocPath));
+            $keys = array_values(array_diff($keys, DocxTemplateService::reservedPlaceholders()));
 
             $inputFields = array_values(array_map(function (string $key) {
                 $label = ucwords(str_replace('_', ' ', $key));
