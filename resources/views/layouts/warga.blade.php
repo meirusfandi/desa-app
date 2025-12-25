@@ -22,6 +22,66 @@
   <link rel="stylesheet" href="{{ asset('mazer/assets/compiled/css/app.css') }}">
   <link rel="stylesheet" href="{{ asset('mazer/assets/compiled/css/app-dark.css') }}">
   <link rel="stylesheet" href="{{ asset('mazer/assets/compiled/css/iconly.css') }}">
+  
+  <style>
+    body {
+        background-color: #EDFBE2 !important;
+    }
+    
+    [data-bs-theme=dark] body {
+        background-color: #1F291F !important;
+    }
+
+    :root {
+        --bs-primary: #316738;
+        --bs-link-color: #316738;
+        --bs-link-hover-color: #26522c;
+    }
+
+    .btn-primary {
+        --bs-btn-bg: #316738;
+        --bs-btn-border-color: #316738;
+        --bs-btn-hover-bg: #26522c;
+        --bs-btn-hover-border-color: #26522c;
+        --bs-btn-active-bg: #26522c;
+        --bs-btn-active-border-color: #26522c;
+        --bs-btn-disabled-bg: #316738;
+        --bs-btn-disabled-border-color: #316738;
+    }
+
+    .btn-outline-primary {
+        --bs-btn-color: #316738;
+        --bs-btn-border-color: #316738;
+        --bs-btn-hover-bg: #316738;
+        --bs-btn-hover-border-color: #316738;
+        --bs-btn-active-bg: #316738;
+        --bs-btn-active-border-color: #316738;
+    }
+
+    .text-primary {
+        color: #316738 !important;
+    }
+
+    .bg-primary {
+        background-color: #316738 !important;
+    }
+
+    .sidebar-wrapper .menu .sidebar-item.active > .sidebar-link {
+        background-color: #316738;
+    }
+
+    .page-item.active .page-link {
+        background-color: #316738;
+        border-color: #316738;
+    }
+
+    .stats-icon.green {
+        background-color: rgba(49, 103, 56, 0.2);
+    }
+    .stats-icon.green i {
+        color: #316738;
+    }
+  </style>
 </head>
 
 <body>

@@ -24,6 +24,67 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script src="{{ asset('mazer/assets/static/js/initTheme.js') }}"></script>
+    <style>
+        body {
+            background-color: #EDFBE2 !important;
+        }
+        
+        [data-bs-theme=dark] body {
+            background-color: #1F291F !important;
+        }
+
+        :root {
+            --bs-primary: #316738;
+            --bs-link-color: #316738;
+            --bs-link-hover-color: #26522c;
+        }
+
+        .btn-primary {
+            --bs-btn-bg: #316738;
+            --bs-btn-border-color: #316738;
+            --bs-btn-hover-bg: #26522c;
+            --bs-btn-hover-border-color: #26522c;
+            --bs-btn-active-bg: #26522c;
+            --bs-btn-active-border-color: #26522c;
+            --bs-btn-disabled-bg: #316738;
+            --bs-btn-disabled-border-color: #316738;
+        }
+
+        .btn-outline-primary {
+            --bs-btn-color: #316738;
+            --bs-btn-border-color: #316738;
+            --bs-btn-hover-bg: #316738;
+            --bs-btn-hover-border-color: #316738;
+            --bs-btn-active-bg: #316738;
+            --bs-btn-active-border-color: #316738;
+        }
+
+        .text-primary {
+            color: #316738 !important;
+        }
+
+        .bg-primary {
+            background-color: #316738 !important;
+        }
+
+        .sidebar-wrapper .menu .sidebar-item.active > .sidebar-link {
+            background-color: #316738;
+        }
+
+
+        .page-item.active .page-link {
+            background-color: #316738;
+            border-color: #316738;
+        }
+
+        #auth #auth-right {
+            background: url(./png/4853433.png), linear-gradient(90deg, #316738, #26522c) !important;
+        }
+
+        [data-bs-theme=dark] #auth #auth-right {
+            background: url(./png/4853433.png), linear-gradient(90deg, #316738, #26522c) !important;
+        }
+    </style>
     </head>
     <body>
         <div id="auth">

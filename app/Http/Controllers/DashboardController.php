@@ -14,7 +14,8 @@ class DashboardController extends Controller
         if ($user->hasRole('warga')) {
             $totalSurat = SuratRequest::where('user_id', $user->id)->count();
             $totalSuratSelesai = SuratRequest::where('user_id', $user->id)->where('status', 'signed')->count();
-            return view('warga.dashboard', compact('totalSurat', 'totalSuratSelesai'));
+            $suratTypes = SuratType::all();
+            return view('warga.dashboard', compact('totalSurat', 'totalSuratSelesai', 'suratTypes'));
         } else if ($user->hasRole('admin')) {
             $totalSuratMasuk = SuratRequest::where('status', 'submitted')->count();
             $totalSuratSelesai = SuratRequest::where('status', 'signed')->count();

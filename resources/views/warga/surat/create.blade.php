@@ -41,7 +41,7 @@
                                                 <select name="surat_type_id" id="surat_type_id" class="form-select" required>
                                                     <option value="">-- Pilih Jenis Surat --</option>
                                                     @foreach($suratTypes as $type)
-                                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                    <option value="{{ $type->id }}" {{ request('type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
                                                     @endforeach
                                                 </select>
                                                 @error('surat_type_id')
@@ -138,6 +138,11 @@
                 });
             }
         });
+
+        // Trigger change if value is present (e.g. from query param)
+        if (typeSelect.value) {
+            typeSelect.dispatchEvent(new Event('change'));
+        }
     });
 </script>
 @endsection
