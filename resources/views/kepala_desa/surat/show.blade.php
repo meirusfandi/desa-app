@@ -127,7 +127,7 @@
                             <div class="alert alert-success">
                                 <p class="mb-2"><i class="bi bi-check-circle"></i> Surat sudah selesai dan dapat diakses warga.</p>
                                 @if($surat->signed_file)
-                                    <a href="{{ asset('storage/' . $surat->signed_file) }}" target="_blank" class="btn btn-sm btn-success">Download File</a>
+                                    <a href="{{ route('surat.download', $surat) }}" target="_blank" class="btn btn-sm btn-success">Download File</a>
                                 @endif
                             </div>
                         @elseif($surat->status === 'rejected')

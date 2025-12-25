@@ -148,6 +148,13 @@
                     </li>
                     @endrole
 
+                    <li class="sidebar-item {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
+                        <a href="{{ route('profile.edit') }}" class='sidebar-link'>
+                            <i class="bi bi-person-fill"></i>
+                            <span>Profil Saya</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-item">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\Models\SuratRequest;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
+use Symfony\Component\Process\Process;
 use ZipArchive;
 
 class DocxTemplateService
@@ -16,6 +19,7 @@ class DocxTemplateService
         'signature_date',
         'signature_role',
         'signature_name',
+        'signature_image',
     ];
 
     /**
@@ -87,9 +91,10 @@ class DocxTemplateService
     /**
      * Generate a filled DOCX for a surat request and store it.
      *
-     * @return string Stored relative path (public disk)
+     * @param array<string, string> $overrides
+     * @return string|null Stored relative path (public disk)
      */
-    public function generateFilledDocx(SuratRequest $surat): ?string
+    public function generateFilledDocx(SuratRequest $surat, array $overrides = [], ?string $signaturePath = null): ?string
     {
         $type = $surat->suratType;
         if (!$type || !$type->template_doc_path) {
@@ -117,6 +122,12 @@ class DocxTemplateService
             $processor->setValue($key, (string) $value);
         }
 
+        foreach ($overrides as $key => $value) {
+            $processor->setValue((string) $key, (string) $value);
+        }
+
+        $this->applySignatureImage($processor, $signaturePath);
+
         $relativeOut = 'generated_surat/surat-' . $surat->id . '-' . time() . '.docx';
         $absoluteOut = $disk->path($relativeOut);
 
@@ -128,6 +139,35 @@ class DocxTemplateService
         $processor->saveAs($absoluteOut);
 
         return $relativeOut;
+    }
+
+    /**
+     * Convert a generated DOCX (stored on the public disk) into a PDF on the same disk.
+     */
+    public function convertDocxToPdf(string $relativeDocxPath, ?string $relativePdfPath = null): ?string
+    {
+        $disk = Storage::disk('public');
+        if (! $disk->exists($relativeDocxPath)) {
+            return null;
+        }
+
+        $absoluteIn = $disk->path($relativeDocxPath);
+        $relativePdfPath ??= $this->defaultPdfPath($relativeDocxPath);
+        $absoluteOut = $disk->path($relativePdfPath);
+
+        if (!is_dir(dirname($absoluteOut))) {
+            @mkdir(dirname($absoluteOut), 0755, true);
+        }
+
+        if ($this->convertWithLibreOffice($absoluteIn, $absoluteOut)) {
+            return $relativePdfPath;
+        }
+
+        if ($this->convertWithPhpWord($absoluteIn, $absoluteOut)) {
+            return $relativePdfPath;
+        }
+
+        return null;
     }
 
     public static function reservedPlaceholders(): array
@@ -148,5 +188,92 @@ class DocxTemplateService
             'signature_role' => (string) app_setting('signature_role', $defaultRole),
             'signature_name' => (string) app_setting('signature_name', ''),
         ];
+    }
+
+    private function applySignatureImage(TemplateProcessor $processor, ?string $signaturePath): void
+    {
+        if (! $signaturePath) {
+            return;
+        }
+
+        $disk = Storage::disk('public');
+        if (! $disk->exists($signaturePath)) {
+            return;
+        }
+
+        try {
+            $processor->setImageValue('signature_image', [
+                'path' => $disk->path($signaturePath),
+                'ratio' => true,
+                'width' => 220,
+                'height' => 120,
+            ]);
+        } catch (\Throwable $e) {
+            // Ignore missing placeholder or renderer issues to keep generation resilient.
+        }
+    }
+
+    private function defaultPdfPath(string $relativeDocxPath): string
+    {
+        $basename = pathinfo($relativeDocxPath, PATHINFO_FILENAME) ?: ('surat-' . uniqid());
+        return 'signed_surat/' . $basename . '.pdf';
+    }
+
+    private function convertWithLibreOffice(string $absoluteIn, string $absoluteOut): bool
+    {
+        $binary = config('services.libreoffice.binary')
+            ?? env('LIBREOFFICE_BINARY')
+            ?? 'soffice';
+
+        $process = new Process([
+            $binary,
+            '--headless',
+            '--convert-to',
+            'pdf:writer_pdf_Export',
+            '--outdir',
+            dirname($absoluteOut),
+            $absoluteIn,
+        ]);
+        $process->setTimeout((int) (config('services.libreoffice.timeout', 30)));
+
+        try {
+            $process->run();
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if (! $process->isSuccessful()) {
+            return false;
+        }
+
+        $generated = dirname($absoluteOut) . DIRECTORY_SEPARATOR . (pathinfo($absoluteIn, PATHINFO_FILENAME) . '.pdf');
+        if (! file_exists($generated)) {
+            return false;
+        }
+
+        if ($generated !== $absoluteOut) {
+            @unlink($absoluteOut);
+            if (! @rename($generated, $absoluteOut)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function convertWithPhpWord(string $absoluteIn, string $absoluteOut): bool
+    {
+        Settings::setPdfRendererName(Settings::PDF_RENDERER_DOMPDF);
+        Settings::setPdfRendererPath(base_path('vendor/dompdf/dompdf'));
+
+        try {
+            $phpWord = IOFactory::load($absoluteIn);
+            $writer = IOFactory::createWriter($phpWord, 'PDF');
+            $writer->save($absoluteOut);
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        return file_exists($absoluteOut);
     }
 }

@@ -122,7 +122,7 @@
                             <div class="alert alert-success">
                                 <i class="bi bi-check-circle"></i> Surat ini telah selesai diproses.
                                 <hr>
-                                <a href="{{ asset('storage/' . $surat->signed_file) }}" target="_blank" class="btn btn-sm btn-success">Download File TTD</a>
+                                <a href="{{ route('surat.download', $surat) }}" target="_blank" class="btn btn-sm btn-success">Download File TTD</a>
                             </div>
                         @elseif($surat->status == 'rejected')
                             <div class="alert alert-danger">

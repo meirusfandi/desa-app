@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminRoleController; // Note: Ensure this file exists or removed
 use App\Http\Controllers\Sekretaris\ApprovalController;
 use App\Http\Controllers\KepalaDesa\SignatureController;
+use App\Http\Controllers\SuratDownloadController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+    Route::get('/surat/{surat}/download', [SuratDownloadController::class, 'download'])
+        ->name('surat.download');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

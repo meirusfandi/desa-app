@@ -47,6 +47,38 @@
             @endif
         </div>
 
+        <div>
+            <x-input-label for="nik" :value="__('NIK')" />
+            <x-text-input id="nik" name="nik" type="text" class="mt-1 block w-full" :value="old('nik', optional($user->wargaProfile)->nik)" required autocomplete="off" />
+            <x-input-error class="mt-2" :messages="$errors->get('nik')" />
+        </div>
+
+        <div>
+            <x-input-label for="kk" :value="__('Nomor KK')" />
+            <x-text-input id="kk" name="kk" type="text" class="mt-1 block w-full" :value="old('kk', optional($user->wargaProfile)->kk)" required autocomplete="off" />
+            <x-input-error class="mt-2" :messages="$errors->get('kk')" />
+        </div>
+
+        <div>
+            <x-input-label for="alamat" :value="__('Alamat')" />
+            <textarea id="alamat" name="alamat" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" rows="3" required>{{ old('alamat', optional($user->wargaProfile)->alamat) }}</textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('alamat')" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <x-input-label for="rt" :value="__('RT')" />
+                <x-text-input id="rt" name="rt" type="text" class="mt-1 block w-full" :value="old('rt', optional($user->wargaProfile)->rt)" required autocomplete="off" />
+                <x-input-error class="mt-2" :messages="$errors->get('rt')" />
+            </div>
+
+            <div>
+                <x-input-label for="rw" :value="__('RW')" />
+                <x-text-input id="rw" name="rw" type="text" class="mt-1 block w-full" :value="old('rw', optional($user->wargaProfile)->rw)" required autocomplete="off" />
+                <x-input-error class="mt-2" :messages="$errors->get('rw')" />
+            </div>
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

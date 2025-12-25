@@ -86,7 +86,7 @@
                                             </button>
                                         </form>
                                     @elseif($surat->status == 'signed')
-                                        <a href="{{ asset('storage/' . $surat->signed_file) }}" target="_blank" class="btn btn-sm btn-success mb-1" title="Download">
+                                        <a href="{{ route('surat.download', $surat) }}" target="_blank" class="btn btn-sm btn-success mb-1" title="Download">
                                             <i class="bi bi-download"></i> Download
                                         </a>
                                     @elseif($surat->status == 'rejected')
@@ -121,7 +121,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div class="mt-4">
                     {{ $surats->links() }}
                 </div>

@@ -88,7 +88,12 @@ class SignatureController extends Controller
 
         $signedAt = now();
         $surat->signed_at = $signedAt;
-        $path = $this->pdfService->generateSurat($surat, $signatureSetting->value, auth()->user()->name ?? 'Kepala Desa');
+        try {
+            $path = $this->pdfService->generateSurat($surat, $signatureSetting->value);
+        } catch (\Throwable $e) {
+            return redirect()->route('kepala.surat.show', $surat)
+                ->with('error', 'Gagal menandatangani surat: ' . $e->getMessage());
+        }
 
         $surat->update([
             'status' => 'signed',
