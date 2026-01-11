@@ -18,7 +18,7 @@ class SuratSignedToWarga extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', \App\Channels\FonnteChannel::class];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -41,5 +41,14 @@ class SuratSignedToWarga extends Notification
         }
 
         return $mail->line('Terima kasih.');
+    }
+
+    public function toFonnte(object $notifiable): string
+    {
+        $surat = $this->surat;
+        $title = $surat->suratType?->name ?? 'Surat';
+        $name = $notifiable->name ?? 'Warga';
+        
+        return "Halo {$name},\n\nPengajuan surat Anda *{$title}* (#{$surat->id}) telah *DITANDATANGANI* oleh Kepala Desa.\n\nSilakan cek dashboard untuk mengambil surat atau unduh softfile-nya.\n\nTerima kasih.\n- Pemerintah Desa";
     }
 }

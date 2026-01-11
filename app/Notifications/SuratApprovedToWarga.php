@@ -17,29 +17,20 @@ class SuratApprovedToWarga extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database', \App\Channels\FonnteChannel::class];
     }
 
     public function toMail(object $notifiable): MailMessage
     {
         $surat = $this->surat;
-        $surat->loadMissing(['suratType']);
-
         $title = $surat->suratType?->name ?? 'Surat';
 
-        $mail = (new MailMessage)
-            ->subject("Pengajuan Disetujui Sekretaris: {$title} (#{$surat->id})")
+        return (new MailMessage)
+            ->subject("Surat Disetujui: {$title} (#{$surat->id})")
             ->greeting('Halo, ' . ($notifiable->name ?? 'Warga') . '.')
-            ->line('Pengajuan surat Anda sudah disetujui oleh Sekretaris Desa.')
-            ->line('Status saat ini: Menunggu tanda tangan Kepala Desa.')
-            ->line('Jenis Surat: ' . $title);
-
-        if (!empty($surat->notes)) {
-            $mail->line('Catatan: ' . $surat->notes);
-        }
-
-        return $mail
-            ->action('Lihat Status Pengajuan', route('warga.surat.index'))
+            ->line('Pengajuan surat Anda (' . $title . ') telah DISETUJUI oleh Admin/Sekretaris.')
+            ->line('Surat sedang dalam proses penandatanganan oleh Kepala Desa.')
+            ->action('Lihat Status', route('warga.surat.index'))
             ->line('Terima kasih.');
     }
 }
