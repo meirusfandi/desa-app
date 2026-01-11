@@ -45,7 +45,9 @@
                             <tr>
                                 <th>No</th>
                                 <th>Nama</th>
+                                <th>Username</th>
                                 <th>Email</th>
+                                <th>No. Telp</th>
                                 <th>Role</th>
                                 <th>Aksi</th>
                             </tr>
@@ -55,7 +57,9 @@
                             <tr>
                                 <td>{{ $loop->iteration + $users->firstItem() - 1 }}</td>
                                 <td>{{ $user->name }}</td>
+                                <td>{{ $user->username }}</td>
                                 <td>{{ $user->email }}</td>
+                                <td>{{ $user->mobile_phone }}</td>
                                 <td>
                                     @foreach($user->roles as $role)
                                         <span class="badge bg-secondary">{{ $role->role_name }}</span>

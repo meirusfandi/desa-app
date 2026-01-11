@@ -38,6 +38,8 @@ class AdminUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+            'mobile_phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'string', 'exists:roles,name'],
         ]);
@@ -45,6 +47,8 @@ class AdminUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'username' => $request->username,
+            'mobile_phone' => $request->mobile_phone,
             'password' => Hash::make($request->password),
         ]);
 
@@ -81,12 +85,16 @@ class AdminUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$user->id],
+            'mobile_phone' => ['required', 'string', 'max:20'],
             'role' => ['required', 'string', 'exists:roles,name'],
         ]);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
+            'username' => $request->username,
+            'mobile_phone' => $request->mobile_phone,
         ]);
 
         if ($request->filled('password')) {

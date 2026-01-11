@@ -24,11 +24,11 @@
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="form-group position-relative has-icon-left mb-4">
-                        <input type="email" class="form-control form-control-xl @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="Email" required autofocus>
+                        <input type="text" class="form-control form-control-xl @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="Username" required autofocus>
                         <div class="form-control-icon">
                             <i class="bi bi-person"></i>
                         </div>
-                        @error('email')
+                        @error('username')
                             <div class="invalid-feedback">
                                 <i class="bx bx-radio-circle"></i>
                                 {{ $message }}

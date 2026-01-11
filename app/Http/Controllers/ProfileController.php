@@ -34,7 +34,7 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $userData = $request->safe()->only(['name', 'email']);
+        $userData = $request->safe()->only(['name', 'email', 'username', 'mobile_phone']);
         $profileData = $request->safe()->only(['nik', 'kk', 'alamat', 'rt', 'rw']);
 
         $user->fill($userData);

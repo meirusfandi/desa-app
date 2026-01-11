@@ -45,6 +45,20 @@
                         @enderror
                     </div>
                     <div class="form-group mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" value="{{ old('username', $user->username) }}" required>
+                        @error('username')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="mobile_phone" class="form-label">No. Telepon (WA)</label>
+                        <input type="text" class="form-control @error('mobile_phone') is-invalid @enderror" id="mobile_phone" name="mobile_phone" value="{{ old('mobile_phone', $user->mobile_phone) }}" required placeholder="Contoh: 08123456789">
+                        @error('mobile_phone')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group mb-3">
                         <label for="role" class="form-label">Role</label>
                         <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
                             <option value="">Pilih Role</option>

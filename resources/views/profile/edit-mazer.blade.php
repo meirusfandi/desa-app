@@ -76,6 +76,28 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" name="username" id="username" class="form-control @error('username') is-invalid @enderror" value="{{ old('username', $user->username) }}" required>
+                                        @error('username')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="mobile_phone" class="form-label">No. Telepon (WA)</label>
+                                        <input type="text" name="mobile_phone" id="mobile_phone" class="form-control @error('mobile_phone') is-invalid @enderror" value="{{ old('mobile_phone', $user->mobile_phone) }}" required placeholder="Contoh: 08123456789">
+                                        <small class="text-muted">Nomor ini akan digunakan untuk notifikasi SMS/WA.</small>
+                                        @error('mobile_phone')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <hr class="my-4">
 
                             <div class="row">
