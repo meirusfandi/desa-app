@@ -23,6 +23,11 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/run-migrate', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return 'Migration completed';
+});
+
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
